@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en">
+
+<head>
+  <!-- HTML metadata -->
+  <meta charset="UTF-8" />
+  <title>Fresho.dev Email Demo</title>
+  <meta name="description" content="E-Commerce platform powered by fresho.dev." />
+  <link rel="icon" type="image/png" href="./static/logo-72x72.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+
+  <!-- Social media preview images -->
+  <meta property="og:image" content="./static/logo-512x512.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Fresho.dev Email Demo" />
+
+  <!-- Homescreen icons -->
+  <link rel="apple-touch-icon" href="./static/logo-72x72.png" />
+  <link rel="apple-touch-icon" sizes="72x72" href="./static/logo-72x72.png" />
+  <link rel="apple-touch-icon" sizes="128x128" href="./static/logo-128x128.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="./static/logo-512x512.png" />
+
+  <!-- Other PWA stuff -->
+  <meta name="theme-color" content="#000000">
+
+  <!-- Capabilities-related metadata -->
+  <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+
+  <!-- Third party imports -->
+  <script src="https://unpkg.com/petite-vue"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+
+  <!-- Service worker registration -->
+  <script>
+    navigator.serviceWorker.register('./js/sw.js').then(event => {
+      console.log('ServiceWorker registration successful:', event);
+    }, function (err) {
+      alert(`ServiceWorker registration failed: ${err}`);
+    });
+  </script>
+</head>
+
+<body v-scope @vue:mounted="mounted" class="text-white bg-gradient-to-b from-slate-700 to-slate-900 h-full">
+
+  <!-- Page title and logo -->
+  <div v-show="screen !== 'preview'" class="flex flex-col items-center justify-center h-[64px] pt-[16px]">
+    <h1 class="font-thin text-3xl">
+      Fresho.dev Email Demo
+    </h1>
+  </div>
+
+  <!-- Customer Information -->
+  <div v-show="screen === 'form'" class="flex flex-col items-center justify-center h-[calc(100%-80px)]">
+    <div class="w-3/4 max-w-md">
+      <div>
+        <h1 class="mx-auto flex font-thin text-xl justify-center">Customer Information</h1>
+      </div>
+      <form class="px-8 pt-6 pb-8 mb-4" onsubmit="event.preventDefault()">
+
+        <div class="mb-4">
+          <label class="block text-sm font-thin mb-2">
+            Customer Name
+            <input
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:shadow-outline"
+              v-model:value="name" type="text" placeholder="E.g. John" required />
+          </label>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-thin mb-2">
+            Customer Location
+            <input
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:shadow-outline"
+              v-model:value="location" type="text" placeholder="E.g. New York" required />
+          </label>
+        </div>
+
+        <!-- <div class="mb-6">
+          <label class="block text-sm font-thin mb-2">
+            <div>
+              <span>Customer Details</span>
+            </div>
+            <input
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="E.g. Cusomer has made more than 10 purchases this year" v-model:value="details" type="text"
+              required />
+          </label>
+        </div> -->
+
+        <div class="mb-6">
+          <label class="block text-sm font-thin mb-2">
+            <input
+              class="h-3 w-3 border border-gray-400 rounded-4 checked:bg-gray-900 focus:outline-none cursor-pointer"
+              v-model:value="localEvents" type="checkbox" />
+            <span>Reference news and local weather</span>
+          </label>
+        </div>
+        <div class="mb-0">
+          <input
+            class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit" @click="go()" value="Go" />
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Processing Screen -->
+  <div v-show="screen === 'processing'" class="flex flex-col items-center justify-center h-[calc(100%-80px)]">
+    <div class="w-3/4 max-w-md">
+      <div role="status" class="flex flex-row items-center justify-center">
+        <svg aria-hidden="true" class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+          viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+            fill="currentColor" />
+          <path
+            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+            fill="currentFill" />
+        </svg>
+        <span v-show="!emailData">Processing...</span>
+        <span v-show="emailData">Building email...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Preview -->
+  <div v-show="screen === 'preview'" class="flex flex-col items-center justify-center h-full">
+    <iframe class="w-full h-full" id="frame" src="about:blank"></iframe>
+  </div>
+
+</body>
+
+<script type="module">
+
+  const baseUrl = 'https://functions.fresho.workers.dev';
+
+  window.app = PetiteVue.createApp({
+    screen: 'form',
+    name: null,
+    location: null,
+    details: null,
+    products: null,
+    localEvents: false,
+    emailData: null,
+    emailPreview: null,
+
+    async mounted() {
+      // Load the product inventory.
+      this.products = await fetch('./static/products.json').then(res => res.json());
+
+      // Manually handle navigation events.
+      window.onpopstate = event => this.back();
+
+      // TODO: Handle initial playlist request.
+      window.location.hash = '';
+    },
+
+    async fetchHeadline() {
+      const data = await fetch(`${baseUrl}/news/skynews/offbeat.json`).then(res => res.json());
+      return data[Math.floor(Math.random() * data.length)];
+    },
+
+    headlinePrompt() {
+      return !this.localEvents ? '' :
+        'and some offbeat news headline which you must reference, including the source link as a ' +
+        'HTML <a> tag as part of the greeting like this: <a href="...}>(source)</a>';
+    },
+
+    greetingPrompt(news) {
+      return '' +
+        'You work as a marketer for a company named Fresho PetCo that produces pet supplies. ' +
+        'Your task is to write a brief, customized leading paragraph for a product newsletter.' +
+        `You will be given some basic information about the customer ${this.headlinePrompt()}.` +
+        `\n\nCustomer name: ${this.name}.\nCustomer location: ${this.location}.` +
+        (this.localEvents ? `\nNews: ${news.description}. Source: ${news.url}.` : '') +
+        '\n\nGreeting:\n\n';
+    },
+
+    productPrompt(product) {
+      return '' +
+        'You work as a marketer for a company that produces pet supplies. ' +
+        'Your task is to write a brief product description to sell the product. ' +
+        'You will be given a single product name for which you must write a brief description ' +
+        'to be featured in a newsletter.' +
+        `\n\nProduct: ${product.title}.\n\nDescription:\n\n`;
+    },
+
+    sanitizeOutput(output) {
+      output = output.replace(/\\n/g, '<br/>').replace(/\\"/g, '"').trim();
+      if (output.startsWith('"') && output.endsWith('"')) output = output.slice(1, -1);
+      return output;
+    },
+
+    async textCompletion(prompt, opts) {
+      const url = new URL(baseUrl);
+      url.pathname = '/genai/openai/completion.txt';
+      url.searchParams.set('maxtokens', opts?.max_tokens || 1024);
+      url.searchParams.set('model', opts?.model || `text-davinci-003`);
+      const fetchOpts = { method: 'POST', body: prompt, headers: { 'Content-Type': 'text/plain' } };
+      const completion = await fetch(url, fetchOpts).then(res => res.text()).then(text => text.trim());
+      console.log('>', prompt);
+      console.log('<', this.sanitizeOutput(completion));
+      return this.sanitizeOutput(completion);
+    },
+
+    replaceIframeContent(iframe, innerHTML) {
+      iframe.src = "about:blank";
+      iframe.contentWindow.document.open();
+      iframe.contentWindow.document.write(innerHTML);
+      iframe.contentWindow.document.close();
+    },
+
+    async go() {
+      this.screen = 'processing';
+
+      const news = this.localEvents ? await this.fetchHeadline() : null;
+      const greetingFuture = this.textCompletion(this.greetingPrompt(news), { model: 'text-davinci-003' });
+
+      const shuffled = this.products.sort(() => 0.5 - Math.random());
+      const productFutures = shuffled.slice(0, 4)
+        .map(product => this.productPrompt(product))
+        .map(prompt => this.textCompletion(prompt, { model: 'text-curie-001' }));
+
+      const [greeting, ...descriptions] = await Promise.all([greetingFuture, ...productFutures]);
+      this.emailData = {
+        user: { name: this.name, greeting: greeting },
+        products: shuffled.map((product, idx) =>
+          ({ name: product.title, image: product.image, description: descriptions[idx] })),
+      };
+
+      const url = new URL(baseUrl);
+      url.pathname = '/mail/compose/email.html';
+      url.searchParams.set('ts', Date.now());
+      const opts = { method: 'POST', body: JSON.stringify(this.emailData), headers: { 'Content-Type': 'application/json' } };
+      this.emailPreview = await fetch(url, opts).then(res => res.text());
+      this.replaceIframeContent(document.querySelector('#frame'), this.emailPreview);
+      this.screen = 'preview';
+    },
+
+  }).mount();
+
+</script>
+
+</html>
